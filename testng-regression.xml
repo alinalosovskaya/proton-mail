@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Regression Suite">
+
+    <test name="Regression - Email draft and send">
+        <classes>
+            <class name="tests.EmailDraftAndSendTest"/>
+        </classes>
+    </test>
+
+    <test name="Regression - Search and star email">
+        <classes>
+            <class name="tests.SearchAndStarEmailTest"/>
+        </classes>
+    </test>
+
+    <test name="Regression - Create folder and move email">
+        <classes>
+            <class name="tests.CreateFolderAndMoveEmailTest"/>
+        </classes>
+    </test>
+
+</suite>
