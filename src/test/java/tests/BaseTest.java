@@ -1,8 +1,8 @@
 package tests;
 
+import config.ConfigReader;
+import driver.DriverFactory;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 
@@ -12,9 +12,7 @@ public class BaseTest {
 
     protected WebDriver driver;
 
-    protected static final String LOGIN_URL =
-            "https://mail.proton.me";
-
+    protected static final String LOGIN_URL = ConfigReader.baseUrl();
 
     protected static final String TEST_EMAIL =
             getRequiredEnv("PROTON_TEST_EMAIL");
@@ -36,16 +34,9 @@ public class BaseTest {
     @BeforeMethod
     public void setUp() {
 
-        ChromeOptions options = new ChromeOptions();
+        String browser = ConfigReader.browser();
 
-        options.addArguments("--incognito");
-        options.addArguments("--disable-application-cache");
-        options.addArguments("--disable-extensions");
-        options.setPageLoadStrategy(
-                org.openqa.selenium.PageLoadStrategy.NORMAL
-        );
-
-        driver = new ChromeDriver(options);
+        driver = DriverFactory.createDriver(browser);
 
         driver.manage().window().maximize();
 
