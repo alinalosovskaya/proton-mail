@@ -18,6 +18,9 @@
         <testng.version>7.10.2</testng.version>
         <webdrivermanager.version>5.9.2</webdrivermanager.version>
         <log4j.version>2.24.1</log4j.version>
+        <suite>testng-smoke.xml</suite>
+        <browser>chrome</browser>
+        <env>qa</env>
     </properties>
 
     <dependencies>
@@ -74,6 +77,15 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.2.5</version>
+                <configuration>
+                    <suiteXmlFiles>
+                        <suiteXmlFile>${suite}</suiteXmlFile>
+                    </suiteXmlFiles>
+                    <systemPropertyVariables>
+                        <browser>${browser}</browser>
+                        <env>${env}</env>
+                    </systemPropertyVariables>
+                </configuration>
             </plugin>
         </plugins>
     </build>
