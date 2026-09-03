@@ -11,6 +11,8 @@ public class DriverFactory {
 
     private static final Logger LOGGER = LogManager.getLogger(DriverFactory.class);
 
+    private static final ThreadLocal<WebDriver> DRIVER = new ThreadLocal<>();
+
     public static WebDriver createDriver(String browserName) {
 
         String browser = browserName == null ? "chrome" : browserName.toLowerCase();
@@ -35,6 +37,20 @@ public class DriverFactory {
 
         LOGGER.debug("WebDriver instance created: {}", driver);
 
+        DRIVER.set(driver);
+
         return driver;
+    }
+
+    public static WebDriver getDriver() {
+        return DRIVER.get();
+    }
+
+    public static void quitDriver() {
+        WebDriver driver = DRIVER.get();
+        if (driver != null) {
+            driver.quit();
+            DRIVER.remove();
+        }
     }
 }
