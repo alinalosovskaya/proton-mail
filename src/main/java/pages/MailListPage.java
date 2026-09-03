@@ -10,7 +10,7 @@ import java.util.List;
 public class MailListPage extends AbstractPage {
 
     private final By searchToolbarInput =
-            By.cssSelector("input[data-testid='searсh-keyword'][readonly]");
+            By.cssSelector("input[data-testid='search-keyword'][readonly]");
 
     private final By searchDialogInput =
             By.cssSelector("input[data-testid='input-input-element']");
