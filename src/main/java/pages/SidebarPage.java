@@ -3,6 +3,7 @@ package pages;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.WebElement;
 
 
 public class SidebarPage extends AbstractPage {
@@ -59,7 +60,7 @@ public class SidebarPage extends AbstractPage {
      */
     public MailListPage goToInbox() {
 
-        click(inboxLink);
+        clickInSidebar(inboxLink);
 
         MailListPage page =
                 new MailListPage(driver);
@@ -75,7 +76,7 @@ public class SidebarPage extends AbstractPage {
      */
     public MailListPage goToDrafts() {
 
-        click(draftsLink);
+        clickInSidebar(draftsLink);
 
         MailListPage page =
                 new MailListPage(driver);
@@ -91,7 +92,7 @@ public class SidebarPage extends AbstractPage {
      */
     public MailListPage goToSent() {
 
-        click(sentLink);
+        clickInSidebar(sentLink);
 
         MailListPage page =
                 new MailListPage(driver);
@@ -107,7 +108,7 @@ public class SidebarPage extends AbstractPage {
      */
     public MailListPage goToStarred() {
 
-        click(starredLink);
+        clickInSidebar(starredLink);
 
         MailListPage page =
                 new MailListPage(driver);
@@ -123,7 +124,7 @@ public class SidebarPage extends AbstractPage {
      */
     public ComposePage startNewMessage() {
 
-        click(composeButton);
+        clickInSidebar(composeButton);
 
         ComposePage page =
                 new ComposePage(driver);
@@ -145,7 +146,7 @@ public class SidebarPage extends AbstractPage {
             );
         }
 
-        click(createFolderButton);
+        clickInSidebar(createFolderButton);
 
         longWait.until(
                 ExpectedConditions.visibilityOfElementLocated(
@@ -153,7 +154,7 @@ public class SidebarPage extends AbstractPage {
                 )
         ).sendKeys(folderName);
 
-        click(saveFolderButton);
+        clickInSidebar(saveFolderButton);
 
         waitForFolder(folderName);
 
@@ -217,7 +218,7 @@ public class SidebarPage extends AbstractPage {
             );
         }
 
-        click(folderLocator(folderName));
+        clickInSidebar(folderLocator(folderName));
 
         MailListPage page =
                 new MailListPage(driver);
@@ -233,9 +234,9 @@ public class SidebarPage extends AbstractPage {
      */
     public LoginPage signOut() {
 
-        click(accountMenuButton);
+        clickInSidebar(accountMenuButton);
 
-        click(signOutButton);
+        clickInSidebar(signOutButton);
 
         longWait.until(
                 ExpectedConditions.visibilityOfElementLocated(
@@ -250,11 +251,15 @@ public class SidebarPage extends AbstractPage {
     /**
      * Click an element after it becomes clickable.
      */
-    private void click(By locator) {
+    private void clickInSidebar(By locator) {
 
-        longWait.until(
+        WebElement element = longWait.until(
                 ExpectedConditions.elementToBeClickable(locator)
-        ).click();
+        );
+
+        utils.Highlighter.highlight(driver, element);
+
+        element.click();
     }
 
 
