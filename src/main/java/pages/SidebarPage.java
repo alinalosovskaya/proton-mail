@@ -162,9 +162,12 @@ public class SidebarPage extends AbstractPage {
     private void clickInSidebar(By locator) {
 
         LOGGER.debug("Clicking element: {}", locator);
+
         WebElement element = longWait.until(ExpectedConditions.elementToBeClickable(locator));
-        utils.Highlighter.highlight(driver, element);
-        element.click();
+
+        utils.ClickableElement clickable =  new utils.HighlightingClickableElement(
+                        new utils.PlainClickableElement(element), driver, element);
+        clickable.click();
     }
 
 }
