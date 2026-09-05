@@ -24,8 +24,7 @@ public class ScreenshotUtils {
         try {
             Files.createDirectories(SCREENSHOT_DIR);
 
-            String timestamp = LocalDateTime.now()
-                    .format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"));
+            String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"));
 
             String fileName = testName + "_" + timestamp + ".png";
             Path targetPath = SCREENSHOT_DIR.resolve(fileName);

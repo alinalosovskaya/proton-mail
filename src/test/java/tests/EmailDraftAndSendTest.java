@@ -6,6 +6,7 @@ import pages.ComposePage;
 import pages.LoginPage;
 import pages.MailListPage;
 import pages.SidebarPage;
+import model.Email;
 
 /**
  * Scenario 1:
@@ -21,168 +22,74 @@ import pages.SidebarPage;
  */
 public class EmailDraftAndSendTest extends BaseTest {
 
-    private static final String ADDRESSEE =
-            "recipient@example.com";
+    private static final String ADDRESSEE = "recipient@example.com";
 
-    private static final String SUBJECT =
-            "Draft Test "
-                    + System.currentTimeMillis();
+    private static final String SUBJECT = "Draft Test " + System.currentTimeMillis();
 
-    private static final String BODY =
-            "This is an automated test message body.";
+    private static final String BODY = "This is an automated test message body.";
+
+    private static final Email DRAFT_EMAIL = new Email(ADDRESSEE, SUBJECT, BODY);
 
     @Test
     public void composeSaveDraftAndSendEmail() {
 
-        /*
-         * LOGIN
-         */
-        SidebarPage sidebar =
-                new LoginPage(driver)
-                        .openLoginForm(LOGIN_URL)
-                        .submitCredentials(
-                                TEST_EMAIL,
-                                TEST_PASSWORD
-                        );
+        /* LOGIN */
+        SidebarPage sidebar = new LoginPage(driver).openLoginForm(LOGIN_URL).submitCredentials(TEST_USER);
 
 
-        /*
-         * OPEN COMPOSER
-         */
-        ComposePage composer =
-                sidebar.startNewMessage();
+        /* OPEN COMPOSER */
+        ComposePage composer = sidebar.startNewMessage();
 
-        /*
-         * RECIPIENT
-         */
-        composer.addressTo(ADDRESSEE);
+        /* RECIPIENT */
+        composer.fill(DRAFT_EMAIL).waitUntilContentEntered( DRAFT_EMAIL.getRecipient(), DRAFT_EMAIL.getSubject(),
+                                                            DRAFT_EMAIL.getBody()).closeAndKeepAsDraft();
 
-        /*
-         * SUBJECT
-         */
-        composer.giveSubject(SUBJECT);
-
-        /*
-         * BODY
-         */
-        composer.writeBody(BODY);
-
-        /*
-         * VERIFY COMPOSED CONTENT
-         */
-        composer.waitUntilContentEntered(
-                ADDRESSEE,
-                SUBJECT,
-                BODY
-        );
-
-        /*
-         * SAVE AS DRAFT
-         */
-        composer.closeAndKeepAsDraft();
-
-        /*
-         * OPEN DRAFTS
-         */
+        /* OPEN DRAFTS */
         sidebar.goToDrafts();
 
-        MailListPage mailList =
-                new MailListPage(driver);
+        MailListPage mailList = new MailListPage(driver);
 
-        Assert.assertTrue(
-                mailList.isMailPresent(SUBJECT),
-                "Draft with subject '" + SUBJECT
-                        + "' should be present in Drafts"
-        );
+        Assert.assertTrue(mailList.isMailPresent(SUBJECT), "Draft with subject '" + SUBJECT
+                        + "' should be present in Drafts" );
 
-        /*
-         * REOPEN DRAFT
-         */
-        ComposePage reopenedDraft =
-                mailList.reopenDraft(SUBJECT);
+        /* REOPEN DRAFT */
+        ComposePage reopenedDraft = mailList.reopenDraft(SUBJECT);
 
-        /*
-         * WAIT FOR REOPENED DRAFT
-         */
-        reopenedDraft.waitUntilContentEntered(
-                ADDRESSEE,
-                SUBJECT,
-                BODY
-        );
+        /* WAIT FOR REOPENED DRAFT */
+        reopenedDraft.waitUntilContentEntered(ADDRESSEE, SUBJECT, BODY);
 
-        /*
-         * VERIFY RECIPIENT
-         */
-        Assert.assertEquals(
-                reopenedDraft.recipientValue(ADDRESSEE),
-                ADDRESSEE,
-                "Addressee should match"
-        );
+        /* VERIFY RECIPIENT */
+        Assert.assertEquals(reopenedDraft.recipientValue(ADDRESSEE), ADDRESSEE,"Addressee should match");
 
-        /*
-         * VERIFY SUBJECT
-         */
-        Assert.assertEquals(
-                reopenedDraft.subjectValue(),
-                SUBJECT,
-                "Subject should match"
-        );
+        /* VERIFY SUBJECT */
+        Assert.assertEquals(reopenedDraft.subjectValue(), SUBJECT, "Subject should match");
 
-        /*
-         * VERIFY BODY
-         */
-        Assert.assertTrue(
-                reopenedDraft.bodyValue().contains(BODY),
-                "Body should match"
-        );
+        /*  VERIFY BODY */
+        Assert.assertTrue(reopenedDraft.bodyValue().contains(BODY), "Body should match");
 
-        /*
-         * SEND
-         */
+        /* SEND  */
         reopenedDraft.dispatchMail();
 
-        /*
-         * GO BACK TO DRAFTS
-         */
+        /* GO BACK TO DRAFTS */
         sidebar.goToDrafts();
 
-        mailList =
-                new MailListPage(driver);
+        mailList = new MailListPage(driver);
 
-        /*
-         * VERIFY DRAFT DISAPPEARED
-         */
-        Assert.assertTrue(
-                mailList.mailEventuallyDisappears(SUBJECT),
-                "Mail should no longer be present in Drafts "
-                        + "after sending"
-        );
+        /* VERIFY DRAFT DISAPPEARED */
+        Assert.assertTrue(mailList.mailEventuallyDisappears(SUBJECT),
+                "Mail should no longer be present in Drafts " + "after sending");
 
-        /*
-         * GO TO SENT
-         */
+        /* GO TO SENT */
         sidebar.goToSent();
 
-        mailList =
-                new MailListPage(driver);
+        mailList = new MailListPage(driver);
 
-        /*
-         * VERIFY SENT
-         */
-        Assert.assertTrue(
-                mailList.isMailPresent(SUBJECT),
-                "Mail should be present in Sent after sending"
-        );
+        /*  VERIFY SENT */
+        Assert.assertTrue(mailList.isMailPresent(SUBJECT), "Mail should be present in Sent after sending");
 
-        /*
-         * LOGOUT
-         */
-        LoginPage loginPage =
-                sidebar.signOut();
+        /*  LOGOUT */
+        LoginPage loginPage = sidebar.signOut();
 
-        Assert.assertTrue(
-                loginPage.isLoginFormVisible(),
-                "Login form should be visible after signing out"
-        );
+        Assert.assertTrue(loginPage.isLoginFormVisible(), "Login form should be visible after signing out");
     }
 }

@@ -1,5 +1,7 @@
 package pages;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -9,23 +11,21 @@ import java.util.List;
 
 public class MailListPage extends AbstractPage {
 
-    private final By searchToolbarInput =
-            By.cssSelector("input[data-testid='search-keyword'][readonly]");
+    private static final Logger LOGGER = LogManager.getLogger(MailListPage.class);
 
-    private final By searchDialogInput =
-            By.cssSelector("input[data-testid='input-input-element']");
+    private final By searchToolbarInput = By.cssSelector("input[data-testid='search-keyword'][readonly]");
 
-    private final By searchSubmitButton =
-            By.cssSelector("[data-testid='advanced-search:submit']");
+    private final By searchDialogInput = By.cssSelector("input[data-testid='input-input-element']");
 
-    private final By moveToToolbarButton =
-            By.cssSelector("[data-testid='toolbar:moveto']");
+    private final By searchSubmitButton = By.cssSelector("[data-testid='advanced-search:submit']");
 
-    private final By moveDropdownList =
-            By.cssSelector("[data-testid='move-dropdown-list']");
+    private final By moveToToolbarButton = By.cssSelector("[data-testid='toolbar:moveto']");
 
-    private final By messageRows =
-            By.cssSelector("[data-testid^='message-item:']");
+    private final By moveDropdownList = By.cssSelector("[data-testid='move-dropdown-list']");
+
+    private final By messageRows = By.cssSelector("[data-testid^='message-item:']");
+
+    private final By starInactiveInRow = By.cssSelector("[data-testid='item-star-false']");
 
     public MailListPage(WebDriver driver) {
         super(driver);
@@ -33,20 +33,11 @@ public class MailListPage extends AbstractPage {
 
     public MailListPage waitUntilPageAvailable() {
 
-        wait.until(
-                ExpectedConditions.presenceOfElementLocated(
-                        searchToolbarInput
-                )
-        );
-
+        wait.until(ExpectedConditions.presenceOfElementLocated(searchToolbarInput));
         return this;
     }
 
     public MailListPage waitUntilLoaded() {
-        return waitUntilPageAvailable();
-    }
-
-    public MailListPage waitForMailList() {
         return waitUntilPageAvailable();
     }
 
@@ -57,34 +48,23 @@ public class MailListPage extends AbstractPage {
     public MailListPage searchBySubject(String subject) {
 
         if (subject == null || subject.isBlank()) {
+            LOGGER.error("Attempted to search with an empty subject");
             throw new IllegalArgumentException(
-                    "Search subject must not be empty."
-            );
+                    "Search subject must not be empty.");
         }
 
-        wait.until(
-                ExpectedConditions.elementToBeClickable(
-                        searchToolbarInput
-                )
-        ).click();
+        LOGGER.info("Searching for email with subject: {}", subject);
 
-        WebElement searchInput =
-                wait.until(
-                        ExpectedConditions.visibilityOfElementLocated(
-                                searchDialogInput
-                        )
-                );
+        wait.until(ExpectedConditions.elementToBeClickable(searchToolbarInput)).click();
 
+        WebElement searchInput = wait.until(ExpectedConditions.visibilityOfElementLocated(searchDialogInput));
         searchInput.clear();
         searchInput.sendKeys(subject);
 
-        wait.until(
-                ExpectedConditions.elementToBeClickable(
-                        searchSubmitButton
-                )
-        ).click();
-
+        wait.until(ExpectedConditions.elementToBeClickable(searchSubmitButton)).click();
         waitForMail(subject);
+
+        LOGGER.info("Search completed for subject: {}", subject);
 
         return this;
     }
@@ -94,26 +74,18 @@ public class MailListPage extends AbstractPage {
         if (subject == null || subject.isBlank()) {
             return false;
         }
-
-        return longWait.until(
-                driver -> findMail(subject) != null
-        );
+        return longWait.until(driver -> findMail(subject) != null);
     }
 
     private WebElement findMail(String subject) {
 
-        List<WebElement> mails =
-                driver.findElements(messageRows);
+        List<WebElement> mails = driver.findElements(messageRows);
 
         for (WebElement mail : mails) {
-
-            if (mail.isDisplayed()
-                    && mail.getText().contains(subject)) {
-
+            if (mail.isDisplayed() && mail.getText().contains(subject)) {
                 return mail;
             }
         }
-
         return null;
     }
 
@@ -122,58 +94,46 @@ public class MailListPage extends AbstractPage {
         if (subject == null || subject.isBlank()) {
             return false;
         }
-
-        return longWait.until(
-                driver -> findMail(subject) != null
-        );
+        return longWait.until(driver -> findMail(subject) != null);
     }
 
+    //in draft test mail should disappear from drafts
     public boolean mailEventuallyDisappears(String subject) {
 
         if (subject == null || subject.isBlank()) {
             return false;
         }
-
-        return longWait.until(
-                driver -> findMail(subject) == null
-        );
+        return longWait.until(driver -> findMail(subject) == null);
     }
 
     private WebElement waitForMailItem(String subject) {
 
-        return longWait.until(
-                driver -> findMail(subject)
-        );
+        return longWait.until(driver -> findMail(subject));
     }
 
     public MailListPage selectMailByCheckbox(String subject) {
 
-        WebElement mail =
-                waitForMailItem(subject);
+        LOGGER.debug("Selecting email checkbox for subject: {}", subject);
 
-        By checkbox =
-                By.cssSelector("label.item-checkbox-label");
-
-        wait.until(
-                ExpectedConditions.elementToBeClickable(
-                        mail.findElement(checkbox)
-                )
-        ).click();
-
+        WebElement mail = waitForMailItem(subject);
+        By checkbox = By.cssSelector("label.item-checkbox-label");
+        wait.until(ExpectedConditions.elementToBeClickable(mail.findElement(checkbox))).click();
         return this;
     }
 
     public MailDetailPage openMailForReading(String subject) {
 
-        waitForMailItem(subject).click();
+        LOGGER.info("Opening email for reading: {}", subject);
 
+        waitForMailItem(subject).click();
         return new MailDetailPage(driver);
     }
 
     public ComposePage reopenDraft(String subject) {
 
-        waitForMailItem(subject).click();
+        LOGGER.info("Reopening draft: {}", subject);
 
+        waitForMailItem(subject).click();
         return new ComposePage(driver);
     }
 
@@ -183,88 +143,62 @@ public class MailListPage extends AbstractPage {
     public MailListPage moveSelectedMailTo(String folderName) {
 
         if (folderName == null || folderName.isBlank()) {
-            throw new IllegalArgumentException(
-                    "Folder name must not be empty."
-            );
+            LOGGER.error("Attempted to move email to an empty folder name");
+            throw new IllegalArgumentException("Folder name must not be empty.");
         }
 
-        driver.findElement(moveToToolbarButton).click();
+        LOGGER.info("Moving selected email to folder: {}", folderName);
 
-        WebElement dropdown =
-                wait.until(
-                        ExpectedConditions.visibilityOfElementLocated(
-                                moveDropdownList
-                        )
-                );
+        wait.until(ExpectedConditions.elementToBeClickable(moveToToolbarButton)).click();
 
-        dropdown.findElement(
-                By.xpath(
-                        ".//li[.//*[normalize-space()=" +
-                                xpathLiteral(folderName) +
-                                "]]"
-                )
-        ).click();
+        WebElement dropdown = wait.until(ExpectedConditions.visibilityOfElementLocated(moveDropdownList));
+
+        By folderOption = By.xpath(".//li[.//*[normalize-space()=" + xpathLiteral(folderName) + "]]");
+        WebElement option = wait.until(d -> {
+            List<WebElement> found = dropdown.findElements(folderOption);
+            return found.isEmpty() ? null : found.get(0);
+        });
+        option.click();
+
+        LOGGER.info("Email moved to folder: {}", folderName);
 
         return this;
     }
 
-
-    public boolean hasAtLeastOneMail() {
-        return !driver.findElements(messageRows).isEmpty();
-    }
-
     public boolean waitForAtLeastOneMail() {
-
-        return longWait.until(
-                driver ->
-                        !driver.findElements(messageRows).isEmpty()
-        );
+        return longWait.until(driver -> !driver.findElements(messageRows).isEmpty());
     }
 
-    public int visibleMailCount() {
+    private WebElement findUnstarredMail(String subject) {
 
-        int count = 0;
+        List<WebElement> mails = driver.findElements(messageRows);
+        for (WebElement mail : mails) {
+            if (mail.isDisplayed() && mail.getText().contains(subject)
+                    && !mail.findElements(starInactiveInRow).isEmpty()) {  return mail; }}
+        return null;
+    }
 
-        for (WebElement mail :
-                driver.findElements(messageRows)) {
+    public MailDetailPage openUnstarredMailForReading(String subject) {
 
-            if (mail.isDisplayed()) {
-                count++;
-            }
-        }
+        if (subject == null || subject.isBlank()) {
+            LOGGER.error("Attempted to open unstarred email with an empty subject");
+            throw new IllegalArgumentException("Subject must not be empty."); }
 
-        return count;
+        LOGGER.info("Opening unstarred email for reading: {}", subject);
+
+        WebElement mail = longWait.until(driver -> findUnstarredMail(subject));
+        mail.click();
+        return new MailDetailPage(driver);
     }
 
     private String xpathLiteral(String value) {
 
-        if (!value.contains("'")) {
-            return "'" + value + "'";
-        }
-
-        if (!value.contains("\"")) {
-            return "\"" + value + "\"";
-        }
-
-        String[] parts =
-                value.split("'", -1);
-
-        StringBuilder result =
-                new StringBuilder("concat(");
-
+        if (!value.contains("'")) { return "'" + value + "'";}
+        if (!value.contains("\"")) { return "\"" + value + "\"";}
+        String[] parts = value.split("'", -1);
+        StringBuilder result = new StringBuilder("concat(");
         for (int i = 0; i < parts.length; i++) {
-
-            if (i > 0) {
-                result.append(", \"'\", ");
-            }
-
-            result.append("'")
-                    .append(parts[i])
-                    .append("'");
-        }
-
+            if (i > 0) {result.append(", \"'\", ");}
+            result.append("'").append(parts[i]).append("'"); }
         result.append(")");
-
-        return result.toString();
-    }
-}
+        return result.toString();}}

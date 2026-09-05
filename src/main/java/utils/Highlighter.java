@@ -6,8 +6,7 @@ import org.openqa.selenium.WebElement;
 
 public class Highlighter {
 
-    private static final String HIGHLIGHT_STYLE =
-            "border: 3px solid red; background-color: yellow;";
+    private static final String HIGHLIGHT_STYLE = "border: 3px solid red; background-color: yellow;";
 
     public static void highlight(WebDriver driver, WebElement element) {
 
@@ -15,13 +14,9 @@ public class Highlighter {
 
         String originalStyle = element.getAttribute("style");
 
-        js.executeScript("arguments[0].setAttribute('style', arguments[1]);",
-                element, HIGHLIGHT_STYLE);
+        js.executeScript("arguments[0].setAttribute('style', arguments[1]);", element, HIGHLIGHT_STYLE);
 
-        try {
-            Thread.sleep(300);
-        } catch (InterruptedException ignored) {
-        }
+        try { Thread.sleep(300); } catch (InterruptedException ignored) {}
 
         js.executeScript("arguments[0].setAttribute('style', arguments[1]);",
                 element, originalStyle == null ? "" : originalStyle);
