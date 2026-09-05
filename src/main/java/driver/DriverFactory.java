@@ -20,7 +20,7 @@ public class DriverFactory {
     public static WebDriver createDriver(String browserName) {
 
         String browser = browserName == null ? "chrome" : browserName.toLowerCase();
-        boolean headless = ConfigReader.isHeadless();
+        boolean headless = ConfigReader.getInstance().isHeadless();
 
         LOGGER.info("Creating WebDriver for browser: {}, headless: {}", browser, headless);
 
