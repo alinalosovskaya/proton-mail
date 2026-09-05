@@ -32,6 +32,14 @@ jobs:
           PROTON_TEST_PASSWORD: ${{ secrets.PROTON_TEST_PASSWORD }}
         continue-on-error: true
 
+      - name: Publish test results
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: TestNG Results
+          path: target/surefire-reports/*.xml
+          reporter: java-testng
+
       - name: Archive failure screenshots
         uses: actions/upload-artifact@v4
         if: always()

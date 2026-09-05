@@ -10,12 +10,7 @@ import utils.Highlighter;
 
 import java.time.Duration;
 
-/**
- * Base class for all Page Objects.
- *
- * Locators belong to concrete Page Objects.
- * This class contains reusable browser/wait helpers.
- */
+/** Base class for all Page Objects */
 public abstract class AbstractPage {
 
     protected final WebDriver driver;
@@ -32,20 +27,5 @@ public abstract class AbstractPage {
         this.longWait.ignoring(StaleElementReferenceException.class);
     }
 
-    public String currentUrl() {
-        return driver.getCurrentUrl();
-    }
 
-    /**
-     * Waits until the element is clickable, highlights it, then clicks.
-     * Use this instead of driver.findElement(locator).click() in page objects.
-     */
-    protected void click(By locator) {
-
-        WebElement element = wait.until(ExpectedConditions.elementToBeClickable(locator));
-
-        Highlighter.highlight(driver, element);
-
-        element.click();
-    }
 }

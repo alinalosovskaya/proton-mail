@@ -5,53 +5,29 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
-import java.util.List;
-
 public class MailDetailPage extends AbstractPage {
+    private final By conversationContainer = By.cssSelector("article.message-container.is-opened");
 
-    private final By starButton = By.cssSelector( "[data-testid='item-star-false']" );
-
-    private final By activeStarButton =  By.cssSelector("[data-testid='item-star-true']");
+    private final By starButton = By.cssSelector("[data-testid='item-star-false']");
+    private final By activeStarButton = By.cssSelector("[data-testid='item-star-true']");
 
     public MailDetailPage(WebDriver driver) {
         super(driver);
     }
 
-    /** Star the currently opened conversation. */
+    /** Star the currently opened message in the conversation. */
     public MailDetailPage toggleStar() {
-
-        WebElement star = wait.until(driver -> {
-
-                    List<WebElement> buttons = driver.findElements(starButton);
-                    for (WebElement button : buttons) {
-                        if (button.isDisplayed() && button.isEnabled()) { return button;   }   }
-                    return null;     });
-
+        WebElement container = wait.until(ExpectedConditions.visibilityOfElementLocated(conversationContainer));
+        WebElement star = wait.until(d -> container.findElement(starButton));
         star.click();
-        wait.until(driver -> {
-            List<WebElement> buttons =  driver.findElements(activeStarButton);
 
-            for (WebElement button : buttons) {
-                if (button.isDisplayed()) {  return true;  } }
-            return false;
-        });
-
+        wait.until(d -> container.findElements(activeStarButton).stream().anyMatch(WebElement::isDisplayed));
         return this;
     }
 
-    /**
-     * Check whether the current conversation is starred.
-     */
+    /** Check whether the currently opened message is starred */
     public boolean isStarActive() {
-
-        List<WebElement> buttons = driver.findElements(activeStarButton);
-
-        for (WebElement button : buttons) {
-
-            if (button.isDisplayed()) { return true; }
-
-        }
-
-        return false;
+        WebElement container = wait.until(ExpectedConditions.visibilityOfElementLocated(conversationContainer));
+        return container.findElements(activeStarButton).stream().anyMatch(WebElement::isDisplayed);
     }
 }

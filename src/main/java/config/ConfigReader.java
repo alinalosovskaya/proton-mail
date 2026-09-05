@@ -14,15 +14,11 @@ public class ConfigReader {
 
         try (InputStream input = ConfigReader.class.getClassLoader().getResourceAsStream(fileName)) {
 
-            if (input == null) {
-                throw new RuntimeException("Config file not found: " + fileName);
-            }
+            if (input == null) { throw new RuntimeException("Config file not found: " + fileName);}
 
             PROPERTIES.load(input);
 
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to load config file: " + fileName, e);
-        }
+        } catch (IOException e) { throw new RuntimeException("Failed to load config file: " + fileName, e);}
     }
 
     public static String get(String key) {
@@ -35,5 +31,10 @@ public class ConfigReader {
 
     public static String browser() {
         return get("browser");
+    }
+
+    public static boolean isHeadless() {
+        String value = get("headless");
+        return Boolean.parseBoolean(value);
     }
 }
