@@ -14,7 +14,7 @@ import java.time.Duration;
 public class BaseTest {
 
     protected WebDriver driver;
-    protected static final String LOGIN_URL = ConfigReader.baseUrl();
+    protected static final String LOGIN_URL = ConfigReader.getInstance().baseUrl();
     protected static final String TEST_EMAIL = getRequiredEnv("PROTON_TEST_EMAIL");
     protected static final String TEST_PASSWORD = getRequiredEnv("PROTON_TEST_PASSWORD");
 
@@ -32,7 +32,7 @@ public class BaseTest {
     @BeforeMethod
     public void setUp() {
 
-        String browser = ConfigReader.browser();
+        String browser = ConfigReader.getInstance().browser();
         driver = DriverFactory.createDriver(browser);
         driver.manage().window().maximize();
         driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(30) );
