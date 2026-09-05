@@ -37,7 +37,7 @@ jobs:
         if: always()
         with:
           name: TestNG Results
-          path: target/surefire-reports/*.xml
+          path: target/surefire-reports/TEST-*.xml
           reporter: java-junit
 
       - name: Archive failure screenshots
