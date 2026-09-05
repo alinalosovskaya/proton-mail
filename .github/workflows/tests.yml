@@ -38,7 +38,7 @@ jobs:
         with:
           name: TestNG Results
           path: target/surefire-reports/*.xml
-          reporter: java-testng
+          reporter: java-junit
 
       - name: Archive failure screenshots
         uses: actions/upload-artifact@v4
