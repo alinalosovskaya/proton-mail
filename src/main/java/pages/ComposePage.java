@@ -9,10 +9,12 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import java.time.Duration;
 import java.util.List;
 import model.Email;
+import utils.EditorTextReader;
 
 public class ComposePage extends AbstractPage {
 
     private static final Logger LOGGER = LogManager.getLogger(ComposePage.class);
+    private final EditorTextReader editorTextReader;
 
     private final By roosterIframe = By.cssSelector("iframe[data-testid='rooster-iframe']");
     private final By bodyEditor = By.cssSelector("#rooster-editor[contenteditable='true']");
@@ -26,7 +28,10 @@ public class ComposePage extends AbstractPage {
 
     private final By recipientSummaryField = By.cssSelector("[data-testid='composer:address']");
 
-    public ComposePage(WebDriver driver) { super(driver); }
+    public ComposePage(WebDriver driver) {
+        super(driver);
+        this.editorTextReader = new EditorTextReader(driver);
+    }
 
     public ComposePage waitUntilReady() {
         LOGGER.debug("Waiting for composer to be ready");
@@ -113,7 +118,7 @@ public class ComposePage extends AbstractPage {
         bodyWait.until(driver -> {
             try {
                 switchToRoosterIframe();
-                return getEditorText(driver.findElement(bodyEditor)).contains(body);
+                return editorTextReader.readText(driver.findElement(bodyEditor)).contains(body);
             } catch (StaleElementReferenceException | NoSuchElementException e) {
                 return false;
             } finally {
@@ -125,19 +130,6 @@ public class ComposePage extends AbstractPage {
         return this;
     }
 
-    /** Reads text from a contenteditable editor. */
-    private String getEditorText(WebElement editor) {
-        String text = editor.getText();
-        if (text != null && !text.trim().isEmpty()) return text;
-
-        String innerText = (String) ((JavascriptExecutor) driver)
-                .executeScript("return arguments[0].innerText || '';", editor);
-        if (innerText != null && !innerText.trim().isEmpty()) return innerText;
-
-        String textContent = (String) ((JavascriptExecutor) driver)
-                .executeScript("return arguments[0].textContent || '';", editor);
-        return textContent == null ? "" : textContent;
-    }
 
     /** Checks whether the expected recipient is present as a confirmed */
     private boolean isRecipientPresent(String expectedRecipient) {
@@ -185,7 +177,7 @@ public class ComposePage extends AbstractPage {
                 boolean recipientOk = isRecipientPresent(recipient);
 
                 switchToRoosterIframe();
-                boolean bodyOk = getEditorText(driver.findElement(bodyEditor)).contains(body);
+                boolean bodyOk =editorTextReader.readText(driver.findElement(bodyEditor)).contains(body);
 
                 return recipientOk && subjectOk && bodyOk;
             } catch (StaleElementReferenceException | NoSuchElementException e) {
@@ -225,7 +217,7 @@ public class ComposePage extends AbstractPage {
     public String bodyValue() {
         switchToRoosterIframe();
         WebElement editor = longWait.until(ExpectedConditions.visibilityOfElementLocated(bodyEditor));
-        String text = getEditorText(editor);
+        String text = editorTextReader.readText(editor);
         switchToMainDocument();
         return text;
     }
