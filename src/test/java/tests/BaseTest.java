@@ -77,7 +77,7 @@ public class BaseTest {
     }
 
     @AfterMethod
-    public void tearDown(ITestResult result) {              // <-- ДОБАВЛЕН ПАРАМЕТР ITestResult
+    public void tearDown(ITestResult result) {              
 
         if (result.getStatus() == ITestResult.FAILURE && driver != null) {
             try {
