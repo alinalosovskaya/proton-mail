@@ -40,7 +40,7 @@ public class SearchAndStarEmailTest extends BaseTest {
         Assert.assertFalse(mailDetail.isStarActive(), "Star icon should not be active before starring the email");
 
         /*  Star it. */
-        mailDetail.toggleStar();
+        mailDetail.clickStar();
 
         /* Verify star. */
         Assert.assertTrue(mailDetail.isStarActive(), "Star icon should be active after clicking it");

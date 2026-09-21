@@ -1,6 +1,6 @@
 package listeners;
 
-import driver.DriverFactory;
+import driver.DriverContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.WebDriver;
@@ -19,7 +19,10 @@ public class TestListener implements ITestListener {
 
         LOGGER.error("Test FAILED: {}", testName, result.getThrowable());
 
-        WebDriver driver = DriverFactory.getDriver();
+        WebDriver driver = DriverContext.get();
+
+        if (driver != null) {
+            ScreenshotUtils.capture(driver, testName);}
 
         ScreenshotUtils.capture(driver, testName);
     }

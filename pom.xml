@@ -18,6 +18,8 @@
         <testng.version>7.10.2</testng.version>
         <webdrivermanager.version>5.9.2</webdrivermanager.version>
         <log4j.version>2.24.1</log4j.version>
+        <aspectj.version>1.9.22</aspectj.version>
+        <reportportal.version>5.2.0</reportportal.version>
         <suite>testng-smoke.xml</suite>
         <browser>chrome</browser>
         <env>qa</env>
@@ -39,14 +41,14 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- WebDriverManager: автоматически подтягивает нужный драйвер под установленный браузер -->
+        <!-- WebDriverManager -->
         <dependency>
             <groupId>io.github.bonigarcia</groupId>
             <artifactId>webdrivermanager</artifactId>
             <version>${webdrivermanager.version}</version>
         </dependency>
 
-        <!-- Log4j2: логирование -->
+        <!-- Log4j2 -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
@@ -57,11 +59,42 @@
             <artifactId>log4j-core</artifactId>
             <version>${log4j.version}</version>
         </dependency>
+
+        <!-- Мост SLF4J -> Log4j2 (чинит ошибку StaticLoggerBinder) -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <version>${log4j.version}</version>
+        </dependency>
+
+        <!-- Report Portal: агент для TestNG -->
+        <dependency>
+            <groupId>com.epam.reportportal</groupId>
+            <artifactId>agent-java-testng</artifactId>
+            <version>${reportportal.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Report Portal: логгер для Log4j -->
+        <dependency>
+            <groupId>com.epam.reportportal</groupId>
+            <artifactId>logger-java-log4j</artifactId>
+            <version>5.1.0</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- AspectJ: обязателен для работы агента Report Portal -->
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+            <version>${aspectj.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
         <plugins>
-            <!-- Плагин для компиляции под Java 17 -->
+            <!-- Компиляция под Java 17 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -72,12 +105,15 @@
                 </configuration>
             </plugin>
 
-            <!-- Плагин для запуска тестов через Maven (использует TestNG автоматически) -->
+            <!-- Запуск тестов + javaagent для Report Portal -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.2.5</version>
                 <configuration>
+                    <argLine>
+                        -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"
+                    </argLine>
                     <suiteXmlFiles>
                         <suiteXmlFile>${suite}</suiteXmlFile>
                     </suiteXmlFiles>

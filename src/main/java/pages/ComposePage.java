@@ -24,9 +24,9 @@ public class ComposePage extends AbstractPage {
             "[data-testid='composer:subject'], input[placeholder*='Subject' i], input[aria-label*='Subject' i]");
     private final By sendButton = By.cssSelector("[data-testid='composer:send-button'], button[aria-label*='Send' i]");
     private final By closeButton = By.cssSelector("[data-testid='composer:close-button'], button[aria-label*='Close' i]");
-    private final By recipientChipLabel = By.cssSelector("[data-testid='composer-addresses-item-label']");
-
-    private final By recipientSummaryField = By.cssSelector("[data-testid='composer:address']");
+    private final By recipientAnyIndicator = By.cssSelector(
+            "[data-testid='composer:address'], [data-testid='composer-addresses-item-label']"
+    );
 
     public ComposePage(WebDriver driver) {
         super(driver);
@@ -78,7 +78,7 @@ public class ComposePage extends AbstractPage {
         field.clear();
         field.sendKeys(recipient);
         field.sendKeys(Keys.ENTER);
-        LOGGER.debug("Recipient chips after ENTER: {}", driver.findElements(recipientChipLabel).size());
+        LOGGER.debug("Recipient chips after ENTER: {}", driver.findElements(recipientAnyIndicator ).size());
 
         return this;
     }
@@ -133,32 +133,25 @@ public class ComposePage extends AbstractPage {
 
     /** Checks whether the expected recipient is present as a confirmed */
     private boolean isRecipientPresent(String expectedRecipient) {
+
         switchToMainDocument();
 
-        List<WebElement> summaries = driver.findElements(recipientSummaryField);
-        if (!((List<?>) summaries).isEmpty()) {
-            WebElement summary = summaries.get(0);
-            String title = summary.findElements(By.cssSelector("[title]")).stream()
-                    .map(el -> el.getAttribute("title"))
-                    .filter(t -> t != null && !t.isBlank())
-                    .findFirst()
-                    .orElse(null);
-
-            if (title != null && (expectedRecipient.equals(title) || title.contains(expectedRecipient))) {
-                return true;
-            }
-
-            String text = summary.getText();
-            if (text != null && text.contains(expectedRecipient)) { return true; }
-        }
-
-
-        for (WebElement chip : driver.findElements(recipientChipLabel)) {
+        for (WebElement element : driver.findElements(recipientAnyIndicator)) {
             try {
-                String text = chip.getText();
-                if (expectedRecipient.equals(text) || (text != null && text.contains(expectedRecipient))) {
-                    return true; }
-            } catch (StaleElementReferenceException ignored) { }}
+                String text = element.getText();
+                String title = element.getAttribute("title");
+
+                boolean matches = (text != null && text.contains(expectedRecipient))
+                        || (title != null && title.contains(expectedRecipient));
+
+                if (matches) {
+                    return true;
+                }
+
+            } catch (StaleElementReferenceException ignored) {
+                // element changed mid-check — just skip it
+            }
+        }
 
         return false;
     }
