@@ -4,11 +4,7 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
-/**
- * Responsible only for reading text out of a contenteditable editor
- * (like Proton Mail's Rooster editor), trying multiple strategies
- * because getText() alone is unreliable for contenteditable elements.
- */
+
 public class EditorTextReader {
 
     private final WebDriver driver;

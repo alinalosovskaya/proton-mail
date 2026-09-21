@@ -74,7 +74,7 @@ public class CreateFolderAndMoveEmailTest extends BaseTest {
         MailListPage folder = sidebar.goToFolder(FOLDER_NAME);
 
         /* 11. Verify folder contains a message */
-        Assert.assertTrue(folder.waitForAtLeastOneMail(),"Folder '" + FOLDER_NAME +
+        Assert.assertTrue(folder.waitForAnyMail(),"Folder '" + FOLDER_NAME +
                         "' should contain the moved email" );
 
         /* 13. Logout */

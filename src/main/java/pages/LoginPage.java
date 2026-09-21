@@ -49,6 +49,20 @@ public class LoginPage extends AbstractPage {
         return this;
     }
 
+
+
+    /** Login using a User business object. */
+    public SidebarPage submitCredentials(User user) {
+        return submitCredentials(user.getEmail(), user.getPassword());
+    }
+
+    /** Checks whether login form is visible( to ensure signing out after test) */
+    public boolean isLoginFormVisible() {
+        return driver.findElement(USERNAME).isDisplayed()&& driver.findElement(PASSWORD).isDisplayed();
+    }
+
+
+
     /** Login with username and password. */
     public SidebarPage submitCredentials(String username, String password) {
 
@@ -79,12 +93,4 @@ public class LoginPage extends AbstractPage {
         return new SidebarPage(driver);
     }
 
-    /** Login using a User business object. */
-    public SidebarPage submitCredentials(User user) {
-        return submitCredentials(user.getEmail(), user.getPassword());
-    }
-
-    /** Checks whether login form is visible( to ensure signing out after test) */
-    public boolean isLoginFormVisible() {
-        return driver.findElement(USERNAME).isDisplayed()&& driver.findElement(PASSWORD).isDisplayed();
-    } }
+ }

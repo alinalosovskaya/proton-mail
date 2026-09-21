@@ -76,7 +76,7 @@ public class EmailDraftAndSendTest extends BaseTest {
         mailList = new MailListPage(driver);
 
         /* VERIFY DRAFT DISAPPEARED */
-        Assert.assertTrue(mailList.mailEventuallyDisappears(SUBJECT),
+        Assert.assertTrue(mailList.mailDisappears(SUBJECT),
                 "Mail should no longer be present in Drafts " + "after sending");
 
         /* GO TO SENT */

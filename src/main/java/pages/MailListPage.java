@@ -8,6 +8,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import java.util.List;
+import utils.XPathUtils;
 
 public class MailListPage extends AbstractPage {
 
@@ -98,7 +99,7 @@ public class MailListPage extends AbstractPage {
     }
 
     //in draft test mail should disappear from drafts
-    public boolean mailEventuallyDisappears(String subject) {
+    public boolean mailDisappears(String subject) {
 
         if (subject == null || subject.isBlank()) {
             return false;
@@ -153,7 +154,7 @@ public class MailListPage extends AbstractPage {
 
         WebElement dropdown = wait.until(ExpectedConditions.visibilityOfElementLocated(moveDropdownList));
 
-        By folderOption = By.xpath(".//li[.//*[normalize-space()=" + xpathLiteral(folderName) + "]]");
+        By folderOption = By.xpath(".//li[.//*[normalize-space()=" + XPathUtils.literal(folderName) + "]]");
         WebElement option = wait.until(d -> {
             List<WebElement> found = dropdown.findElements(folderOption);
             return found.isEmpty() ? null : found.get(0);
@@ -165,7 +166,7 @@ public class MailListPage extends AbstractPage {
         return this;
     }
 
-    public boolean waitForAtLeastOneMail() {
+    public boolean waitForAnyMail() {
         return longWait.until(driver -> !driver.findElements(messageRows).isEmpty());
     }
 
@@ -191,14 +192,4 @@ public class MailListPage extends AbstractPage {
         return new MailDetailPage(driver);
     }
 
-    private String xpathLiteral(String value) {
-
-        if (!value.contains("'")) { return "'" + value + "'";}
-        if (!value.contains("\"")) { return "\"" + value + "\"";}
-        String[] parts = value.split("'", -1);
-        StringBuilder result = new StringBuilder("concat(");
-        for (int i = 0; i < parts.length; i++) {
-            if (i > 0) {result.append(", \"'\", ");}
-            result.append("'").append(parts[i]).append("'"); }
-        result.append(")");
-        return result.toString();}}
+}

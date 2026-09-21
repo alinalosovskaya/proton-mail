@@ -3,13 +3,13 @@ package utils;
 import org.openqa.selenium.WebElement;
 
 /**
- * Base (undecorated) behaviour: just clicks the element.
+ * Base behaviour: just clicks the element.
  */
-public class PlainClickableElement implements ClickableElement {
+public class BaseClick implements Click {
 
     private final WebElement element;
 
-    public PlainClickableElement(WebElement element) {
+    public BaseClick(WebElement element) {
         this.element = element;
     }
 

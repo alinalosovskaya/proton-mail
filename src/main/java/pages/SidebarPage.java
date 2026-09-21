@@ -6,6 +6,9 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import utils.BaseClick;
+import utils.Click;
+import utils.HighlightClick;
 
 
 public class SidebarPage extends AbstractPage {
@@ -165,8 +168,8 @@ public class SidebarPage extends AbstractPage {
 
         WebElement element = longWait.until(ExpectedConditions.elementToBeClickable(locator));
 
-        utils.ClickableElement clickable =  new utils.HighlightingClickableElement(
-                        new utils.PlainClickableElement(element), driver, element);
+        Click clickable =  new HighlightClick(
+                        new BaseClick(element), driver, element);
         clickable.click();
     }
 

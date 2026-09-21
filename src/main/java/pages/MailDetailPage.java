@@ -16,7 +16,7 @@ public class MailDetailPage extends AbstractPage {
     }
 
     /** Star the currently opened message in the conversation. */
-    public MailDetailPage toggleStar() {
+    public MailDetailPage clickStar() {
         WebElement container = wait.until(ExpectedConditions.visibilityOfElementLocated(conversationContainer));
         WebElement star = wait.until(d -> container.findElement(starButton));
         star.click();

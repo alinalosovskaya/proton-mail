@@ -4,11 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-/**
- * Singleton: only one instance of ConfigReader exists for the whole
- * application. It loads the environment properties file once, and every
- * caller works with the same shared instance instead of creating new ones.
- */
 public class ConfigReader {
 
     private static ConfigReader instance;
@@ -16,7 +11,7 @@ public class ConfigReader {
     private final Properties properties;
     private final String env;
 
-    /** Private constructor: nobody can create a ConfigReader with "new" from outside this class. */
+
     private ConfigReader() {
 
         this.env = System.getProperty("env", "qa");
@@ -37,9 +32,7 @@ public class ConfigReader {
         }
     }
 
-    /**
-     * Returns the single shared instance, creating it on first call.
-     */
+
     public static synchronized ConfigReader getInstance() {
 
         if (instance == null) {
