@@ -79,7 +79,7 @@ public class CreateFolderAndMoveEmailTest extends BaseTest {
 
         /* 13. Logout */
         LoginPage loginPage = sidebar.signOut();
-
+//..
         /* 14. Verify logout */
         Assert.assertTrue(loginPage.isLoginFormVisible(),"Login form should be visible after signing out" );
     }
