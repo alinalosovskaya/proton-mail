@@ -79,7 +79,6 @@ public class BaseTest {
     @AfterMethod
     public void tearDown(ITestResult result) {              // <-- ДОБАВЛЕН ПАРАМЕТР ITestResult
 
-        // ЭТОТ БЛОК ДОБАВЛЕН - если тест упал, делаем скриншот и отправляем в Report Portal
         if (result.getStatus() == ITestResult.FAILURE && driver != null) {
             try {
                 File screenshot = ((TakesScreenshot) driver)
